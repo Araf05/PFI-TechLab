@@ -27,8 +27,8 @@ public class PedidoService {
 
     @Transactional
     public Pedido registrarPedido(Pedido p) {
-        List<LineaPedido> lineasRecibidas = new ArrayList<>(p.getLineasPedido());
-        p.getLineasPedido().clear();
+        List<LineaPedido> lineasRecibidas = new ArrayList<>(p.getLineas());
+        p.getLineas().clear();
 
         for (LineaPedido linea : lineasRecibidas) {
             Producto productoPedido = productoService.buscarPorId(linea.getProducto().getId());
@@ -72,7 +72,7 @@ public class PedidoService {
     }
 
     public LineaPedido buscarLineaPorId(Pedido pedido, int idLineaPedido) {
-        return pedido.getLineasPedido().stream()
+        return pedido.getLineas().stream()
                 .filter(linea -> linea.getId() == idLineaPedido)
                 .findFirst()
                 .orElseThrow(() -> new LineaProductoNoEncontradoException(

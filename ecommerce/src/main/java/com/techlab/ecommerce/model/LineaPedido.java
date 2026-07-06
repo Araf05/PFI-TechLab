@@ -14,13 +14,20 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "lineas_pedido")
+@Data
+@NoArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @SoftDelete(columnName = "fecha_eliminado", strategy = SoftDeleteType.TIMESTAMP)
 public class LineaPedido {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -38,9 +45,6 @@ public class LineaPedido {
     @Column(name = "precio_unitario")
     private Double precioUnitario;
 
-    ///Constructor
-    public LineaPedido() {
-    }
 
     public LineaPedido(Pedido pedido, Producto producto, Integer cantidad) {
         this.pedido = pedido;
@@ -49,47 +53,6 @@ public class LineaPedido {
         this.precioUnitario = producto.getPrecio();
     }
 
-    /// Getters
-    public Integer getId() {
-        return id;
-    }
-
-    public Pedido getPedido() {
-        return pedido;
-    }
-
-    public Producto getProducto() {
-        return producto;
-    }
-
-    public Integer getCantidad() {
-        return cantidad;
-    }
-
-    public Double getPrecioUnitario() {
-        return precioUnitario;
-    }
-
-    /// Setters 
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public void setPedido(Pedido pedido) {
-        this.pedido = pedido;
-    }
-
-    public void setProducto(Producto producto) {
-        this.producto = producto;
-    }
-
-    public void setCantidad(Integer cantidad) {
-        this.cantidad = cantidad;
-    }
-
-    public void setPrecioUnitario(Double precioUnitario) {
-        this.precioUnitario = precioUnitario;
-    }
 
     public Double calcularSubtotal() {
         return precioUnitario * cantidad;

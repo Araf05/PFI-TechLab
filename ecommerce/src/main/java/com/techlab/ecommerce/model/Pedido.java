@@ -13,7 +13,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -21,10 +24,14 @@ import java.util.List;
 
 @Entity
 @Table(name = "pedidos")
+@Data
+@NoArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @SoftDelete(columnName = "fecha_eliminado", strategy = SoftDeleteType.TIMESTAMP)
 public class Pedido {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Integer id;
 
     @Column(name = "fecha", nullable = false)
@@ -34,36 +41,11 @@ public class Pedido {
     @JsonProperty("lineasPedido")
     private List<LineaPedido> lineas = new ArrayList<>();
 
-    @NotBlank(message = "El nombre del producto no puede estar vacío.")
+    @Positive(message = "El costo total del pedido debe ser mayor a cero.")
     @Column(name = "costoTotal", nullable = false)
     private Double costoTotal;
 
-    /// Constructor
-    public Pedido() {
-    }
-
-    /// Getters
-    public Integer getId() {
-        return id;
-    }
-
-    public Timestamp getFecha() {
-        return fecha;
-    }
-
-    public List<LineaPedido> getLineasPedido() {
-        return lineas;
-    }
-
-    public Double getCostoTotal() {
-        return costoTotal;
-    }
-
-    /// Setters
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
+    
     public void setFecha() {
         fecha = new Timestamp(System.currentTimeMillis());
     }
