@@ -35,7 +35,7 @@ public class PedidoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Pedido> buscarPedidoPorId(@PathVariable int id) {
+    public ResponseEntity<Pedido> buscarPedidoPorId(@PathVariable Integer id) {
         return ResponseEntity.ok(service.buscarPedidoId(id));
     }
 
@@ -46,7 +46,7 @@ public class PedidoController {
     }
 
     @DeleteMapping("/{idPedido}/lineas/{idLinea}")
-    public ResponseEntity<Void> quitarProducto(@PathVariable int idPedido, int idLinea) {
+    public ResponseEntity<Void> quitarProducto(@PathVariable Integer idPedido, Integer idLinea) {
         service.quitarProducto(idPedido, idLinea);
         return ResponseEntity.ok().build();
     }

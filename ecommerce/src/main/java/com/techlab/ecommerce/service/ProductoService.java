@@ -23,24 +23,28 @@ public class ProductoService {
         return repository.findAll();
     }
 
-    public Producto buscarPorId(int id) {
+    public Producto buscarPorId(Integer id) {
         return repository.findById(id)
                 .orElseThrow(
                         () -> new ProductoNoEncontradoException("No se ha encontrado un producto con el id " + id));
     }
 
-    public Producto actualizar(int id, Producto datos) {
+    public Producto actualizar(Integer id, Producto datos) {
         Producto p = buscarPorId(id);
 
         p.setNombre(datos.getNombre());
+        p.setDescripcion(datos.getDescripcion());
         p.setPrecio(datos.getPrecio());
         p.setStock(datos.getStock());
+        if(datos.getImagen() != null) {
+            p.setImagen(datos.getImagen());
+        }
         p.setCategoria(datos.getCategoria());
 
         return repository.save(p);
     }
 
-    public void eliminar(int id) {
+    public void eliminar(Integer id) {
         Producto p = buscarPorId(id);
         p.setDisponible(false);
         repository.save(p);
@@ -51,6 +55,6 @@ public class ProductoService {
     }
 
     public List<Producto> buscarPorCategoria(String categoria) {
-        return repository.findByCategoriaNombre(categoria);
+        return repository.findByCategoriaNombreContainingIgnoreCase(categoria);
     }
 }

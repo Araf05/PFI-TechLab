@@ -42,7 +42,7 @@ public class Producto {
     @JoinColumn(name = "categoria_id")
     private Categoria categoria;
 
-    @Column(name = "imagen", nullable = true)
+    @Column(name = "imagen_url", nullable = true)
     private String imagen;
 
     @Column(name = "disponible", nullable = false, columnDefinition = "BOOLEAN DEFAULT true")

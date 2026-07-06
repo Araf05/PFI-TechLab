@@ -49,7 +49,7 @@ public class PedidoService {
     }
 
     @Transactional
-    public LineaPedido creaLineaPedido(int pedido_id, int producto_id, int cantidad) {
+    public LineaPedido creaLineaPedido(Integer pedido_id, Integer producto_id, Integer cantidad) {
         Pedido pedido = buscarPedidoId(pedido_id);
         Producto producto = productoService.buscarPorId(producto_id);
 
@@ -66,12 +66,12 @@ public class PedidoService {
         return nuevaLinea;
     }
 
-    public Pedido buscarPedidoId(int id) {
+    public Pedido buscarPedidoId(Integer id) {
         return repository.findById(id)
                 .orElseThrow(() -> new PedidoNoEncontradoException("El pedido con id " + id + " no existe"));
     }
 
-    public LineaPedido buscarLineaPorId(Pedido pedido, int idLineaPedido) {
+    public LineaPedido buscarLineaPorId(Pedido pedido, Integer idLineaPedido) {
         return pedido.getLineas().stream()
                 .filter(linea -> linea.getId() == idLineaPedido)
                 .findFirst()
@@ -80,7 +80,7 @@ public class PedidoService {
     }
 
     @Transactional
-    public void quitarProducto(int idPedido, int idLineaPedido) {
+    public void quitarProducto(Integer idPedido, Integer idLineaPedido) {
         Pedido pedido = buscarPedidoId(idPedido);
         LineaPedido linea = buscarLineaPorId(pedido, idLineaPedido);
         Producto producto = linea.getProducto();
