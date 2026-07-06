@@ -1,21 +1,49 @@
 package com.techlab.ecommerce.model;
 
+import org.hibernate.annotations.SoftDelete;
+import org.hibernate.annotations.SoftDeleteType;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import java.sql.Timestamp;
 
+@Entity
+@Table(name = "pedidos")
+@SoftDelete(columnName = "fecha_eliminado", strategy = SoftDeleteType.TIMESTAMP)
 public class Pedido {
-    private int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @Column(name = "fecha", nullable = false)
     private Timestamp fecha = new Timestamp(System.currentTimeMillis());
-    private List<LineaPedido> lineasPedido = new ArrayList<>();
-    private double costoTotal;
+
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonProperty("lineasPedido")
+    private List<LineaPedido> lineas = new ArrayList<>();
+
+    @NotBlank(message = "El nombre del producto no puede estar vacío.")
+    @Column(name = "costoTotal", nullable = false)
+    private Double costoTotal;
 
     /// Constructor
     public Pedido() {
     }
 
     /// Getters
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -24,15 +52,15 @@ public class Pedido {
     }
 
     public List<LineaPedido> getLineasPedido() {
-        return lineasPedido;
+        return lineas;
     }
 
-    public double getCostoTotal() {
+    public Double getCostoTotal() {
         return costoTotal;
     }
 
     /// Setters
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -41,19 +69,20 @@ public class Pedido {
     }
 
     public void agregarLinea(LineaPedido linea) {
-        this.lineasPedido.add(linea);
+        this.lineas.add(linea);
+        linea.setPedido(this);
         recalcularTotal();
     }
 
     public void quitarLinea(LineaPedido linea) {
-        this.lineasPedido.remove(linea);
+        this.lineas.remove(linea);
         recalcularTotal();
     }
 
     private void recalcularTotal() {
-        costoTotal = 0;
+        costoTotal = 0.0;
 
-        for (LineaPedido linea : lineasPedido) {
+        for (LineaPedido linea : lineas) {
             costoTotal += linea.calcularSubtotal();
         }
     }
@@ -65,7 +94,7 @@ public class Pedido {
 
         sb.append("\nPedido #").append(id).append("\n");
         sb.append("Fecha: ").append(fecha).append("\n");
-        for (LineaPedido linea : lineasPedido) {
+        for (LineaPedido linea : lineas) {
             sb.append(linea).append("\n");
         }
         sb.append("TOTAL: $").append(costoTotal);

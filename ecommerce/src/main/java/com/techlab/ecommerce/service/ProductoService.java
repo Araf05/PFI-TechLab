@@ -42,7 +42,8 @@ public class ProductoService {
 
     public void eliminar(int id) {
         Producto p = buscarPorId(id);
-        repository.delete(p);
+        p.setDisponible(false);
+        repository.save(p);
     }
 
     public List<Producto> buscarPorNombre(String nombre) {

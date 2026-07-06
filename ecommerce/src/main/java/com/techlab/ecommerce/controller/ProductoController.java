@@ -9,11 +9,11 @@ import com.techlab.ecommerce.service.ProductoService;
 
 import jakarta.validation.Valid;
 
-import com.techlab.ecommerce.exception.ProductoNoEncontradoException;
 import com.techlab.ecommerce.model.Producto;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/productos")
+@CrossOrigin(origins = { "http://localhost:3000", "http://localhost:5500" })
 public class ProductoController {
 
     private final ProductoService service;
@@ -38,11 +39,7 @@ public class ProductoController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Producto> buscarProductoPorId(@PathVariable int id) {
-        try {
-            return ResponseEntity.ok(service.buscarPorId(id));
-        } catch (ProductoNoEncontradoException e) {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok(service.buscarPorId(id));
     }
 
     @PostMapping("")
@@ -53,22 +50,13 @@ public class ProductoController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Producto> actualizarProducto(@PathVariable int id, @Valid @RequestBody Producto datos) {
-        try {
-            return ResponseEntity.ok(service.actualizar(id, datos));
-        } catch (ProductoNoEncontradoException e) {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok(service.actualizar(id, datos));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarProducto(@PathVariable int id) {
-        try {
-            service.eliminar(id);
-            return ResponseEntity.ok().build();
-        } catch (ProductoNoEncontradoException e) {
-            return ResponseEntity.notFound().build();
-        }
-
+        service.eliminar(id);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/nombre/{nombre}")

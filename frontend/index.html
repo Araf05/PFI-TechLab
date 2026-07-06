@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tablero & Dados - Tienda de Juegos de Mesa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-50 text-gray-800 font-sans">
+
+    <nav class="bg-indigo-600 text-white p-4 shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold tracking-wider">🎲 Tablero & Dados</h1>
+            <div class="space-x-4">
+                <button id="btn-catalogo"
+                    class="bg-indigo-700 px-4 py-2 rounded font-semibold hover:bg-indigo-800 transition">Tienda</button>
+                <button id="btn-admin"
+                    class="bg-indigo-500 px-4 py-2 rounded font-semibold hover:bg-indigo-800 transition">Panel
+                    Admin</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto p-6">
+
+        <section id="vista-cliente" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2">
+                <h2 class="text-2xl font-bold mb-4 text-indigo-900">Catálogo de Juegos</h2>
+                <div id="contenedor-catalogo" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-lg shadow-md h-fit border border-gray-100">
+                <h2 class="text-xl font-bold mb-4 text-gray-700 flex items-center justify-between">
+                    🛒 Mi Carrito
+                    <span id="contador-carrito"
+                        class="bg-indigo-100 text-indigo-800 text-sm px-2.5 py-0.5 rounded-full">0</span>
+                </h2>
+                <div id="elementos-carrito" class="divide-y divide-gray-200 mb-4">
+                    <p class="text-gray-400 text-center py-4">El carrito está vacío.</p>
+                </div>
+                <div class="border-t pt-4">
+                    <div class="flex justify-between font-bold text-lg mb-4">
+                        <span>Total:</span>
+                        <span id="total-carrito">$0.00</span>
+                    </div>
+                    <button id="btn-checkout"
+                        class="w-full bg-green-600 text-white py-2 rounded font-bold hover:bg-green-700 transition">
+                        Confirmar Pedido
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section id="vista-admin" class="hidden space-y-8">
+            <div class="flex justify-between items-center">
+                <h2 class="text-2xl font-bold text-indigo-900">Panel de Administración (CRUD)</h2>
+            </div>
+
+            <div class="bg-white p-6 rounded-lg shadow-md border border-gray-100 max-w-xl">
+                <h3 id="form-titulo" class="text-lg font-bold mb-4 text-gray-700">Agregar Nuevo Producto</h3>
+                <form id="form-producto" class="space-y-4">
+                    <input type="hidden" id="prod-id">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600">Nombre del Juego</label>
+                        <input type="text" id="prod-nombre" required
+                            class="w-full p-2 border rounded focus:ring focus:ring-indigo-200 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-600">Descripción</label>
+                        <textarea id="prod-descripcion" required
+                            class="w-full p-2 border rounded focus:ring focus:ring-indigo-200 outline-none"></textarea>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600">Precio ($)</label>
+                            <input type="number" step="0.01" id="prod-precio" required
+                                class="w-full p-2 border rounded focus:ring focus:ring-indigo-200 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600">Stock disponible</label>
+                            <input type="number" id="prod-stock" required
+                                class="w-full p-2 border rounded focus:ring focus:ring-indigo-200 outline-none">
+                        </div>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button type="submit"
+                            class="bg-indigo-600 text-white px-4 py-2 rounded font-bold hover:bg-indigo-700 transition">Guardar
+                            Producto</button>
+                        <button type="button" id="btn-cancelar-edicion"
+                            class="hidden bg-gray-500 text-white px-4 py-2 rounded font-bold hover:bg-gray-600 transition">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-100">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-gray-100 border-b border-gray-200">
+                        <tr>
+                            <th class="p-3 text-sm font-semibold text-gray-600">Nombre</th>
+                            <th class="p-3 text-sm font-semibold text-gray-600">Precio</th>
+                            <th class="p-3 text-sm font-semibold text-gray-600">Stock</th>
+                            <th class="p-3 text-sm font-semibold text-gray-600 text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-productos-cuerpo" class="divide-y divide-gray-100">
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

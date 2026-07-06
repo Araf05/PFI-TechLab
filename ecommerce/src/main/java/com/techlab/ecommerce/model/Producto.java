@@ -1,8 +1,5 @@
 package com.techlab.ecommerce.model;
 
-import org.hibernate.annotations.SoftDelete;
-import org.hibernate.annotations.SoftDeleteType;
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
@@ -10,37 +7,44 @@ import jakarta.validation.constraints.PositiveOrZero;
 
 @Entity
 @Table(name = "productos")
-@SoftDelete(columnName = "fecha_eliminado", strategy = SoftDeleteType.TIMESTAMP)
 public class Producto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @NotBlank(message = "El nombre del producto no puede estar vacío.")
     @Column(name = "nombre", nullable = false, length = 100)
     private String nombre;
 
+    @Column(name = "descripcion", nullable = false, length = 500)
+    private String descripcion;
+
     @PositiveOrZero(message = "El stock del producto no puede ser negativo.")
     @Column(name = "stock", nullable = false)
-    private int stock;
+    private Integer stock;
 
     @Positive(message = "El precio del producto debe ser mayor a cero.")
     @Column(name = "precio", nullable = false)
-    private double precio;
+    private Double precio;
 
     @ManyToOne
     @JoinColumn(name = "categoria_id")
     private Categoria categoria;
 
+    @Column(name = "disponible")
+    private Boolean disponible = true;
+
     /// Constructores
     public Producto() {
     }
 
-    public Producto(String nombre, int stock, Categoria categoria, double precio) {
+    public Producto(String nombre, String descripcion, Integer stock, Categoria categoria, Double precio) {
         this.nombre = nombre;
+        this.descripcion = descripcion;
         this.categoria = categoria;
         this.precio = precio;
         this.stock = stock;
+        this.disponible = true;
     }
 
     /// Getters
@@ -48,7 +52,11 @@ public class Producto {
         return nombre;
     }
 
-    public int getStock() {
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public Integer getStock() {
         return stock;
     }
 
@@ -56,12 +64,16 @@ public class Producto {
         return categoria;
     }
 
-    public double getPrecio() {
+    public Double getPrecio() {
         return precio;
     }
 
-    public int getId() {
+    public Integer getId() {
         return this.id;
+    }
+
+    public Boolean getDisponible() {
+        return disponible;
     }
 
     /// Setters
@@ -69,7 +81,11 @@ public class Producto {
         this.nombre = nombre;
     }
 
-    public void setStock(int stock) {
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public void setStock(Integer stock) {
         this.stock = stock;
     }
 
@@ -77,25 +93,28 @@ public class Producto {
         this.categoria = categoria;
     }
 
-    public void setPrecio(double precio) {
+    public void setPrecio(Double precio) {
         this.precio = precio;
     }
 
-    public void setId(int contadorId) {
-        this.id = contadorId;
+    public void setDisponible(Boolean disponible) {
+        this.disponible = disponible;
     }
+
 
     /// Override
     @Override
     public String toString() {
         String nombreCategoria = (categoria != null) ? categoria.getNombre() : "Sin categoría";
         return String.format(
-                "│ %-4d │ %-24s │ %-19s │ $%10.2f │ %-5d │",
+                "│ %-4d │ %-24s │ %-24s | %-19s │ $%10.2f │ %-5d │ %-20b |",
                 id,
                 nombre,
+                descripcion,
                 nombreCategoria,
                 precio,
-                stock);
+                stock,
+                disponible);
     }
 
 }

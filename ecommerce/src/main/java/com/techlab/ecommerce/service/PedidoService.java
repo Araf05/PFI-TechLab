@@ -1,70 +1,98 @@
 package com.techlab.ecommerce.service;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.techlab.ecommerce.model.Pedido;
 import com.techlab.ecommerce.exception.LineaProductoNoEncontradoException;
 import com.techlab.ecommerce.exception.PedidoNoEncontradoException;
+import com.techlab.ecommerce.exception.StockInsufiecienteException;
 import com.techlab.ecommerce.model.LineaPedido;
 import com.techlab.ecommerce.model.Producto;
+import com.techlab.ecommerce.repository.PedidoRepository;
+
+import org.springframework.transaction.annotation.Transactional;
+
 import org.springframework.stereotype.Service;
 
 @Service
 public class PedidoService {
-    private List<Pedido> listaPedidos = new ArrayList<Pedido>();
-    private int contadorPedido = 1;
-    private int contadorLineasPedido = 1;
+    private final PedidoRepository repository;
+    private final ProductoService productoService;
 
-    public Pedido registrarPedido(Pedido p) {
-
-        p.setId(contadorPedido++);
-        listaPedidos.add(p);
-
-        return p;
+    public PedidoService(PedidoRepository repository, ProductoService productoService) {
+        this.repository = repository;
+        this.productoService = productoService;
     }
 
-    public LineaPedido creaLineaPedido(Pedido pedido, LineaPedido linea) {
+    @Transactional
+    public Pedido registrarPedido(Pedido p) {
+        List<LineaPedido> lineasRecibidas = new ArrayList<>(p.getLineasPedido());
+        p.getLineasPedido().clear();
 
-        linea.getProducto().setStock(
-            linea.getProducto().getStock() - linea.getCantidad()
-        );
+        for (LineaPedido linea : lineasRecibidas) {
+            Producto productoPedido = productoService.buscarPorId(linea.getProducto().getId());
 
-        linea.setId(contadorLineasPedido++);
-        pedido.agregarLinea(linea);
+            if (productoPedido.getStock() < linea.getCantidad()) {
+                throw new StockInsufiecienteException(
+                        "Stock insuficiente para el producto: " + productoPedido.getNombre());
+            }
 
-        return linea;
+            productoPedido.setStock(productoPedido.getStock() - linea.getCantidad());
+
+            linea.setProducto(productoPedido);
+            linea.setPrecioUnitario(productoPedido.getPrecio());
+            p.agregarLinea(linea);
+        }
+
+        return repository.save(p);
+    }
+
+    @Transactional
+    public LineaPedido creaLineaPedido(int pedido_id, int producto_id, int cantidad) {
+        Pedido pedido = buscarPedidoId(pedido_id);
+        Producto producto = productoService.buscarPorId(producto_id);
+
+        if (producto.getStock() < cantidad) {
+            throw new StockInsufiecienteException("Stock insuficiente para el producto: " + producto.getNombre());
+        }
+        producto.setStock(producto.getStock() - cantidad);
+
+        LineaPedido nuevaLinea = new LineaPedido(pedido, producto, cantidad);
+        pedido.agregarLinea(nuevaLinea);
+
+        repository.save(pedido);
+
+        return nuevaLinea;
     }
 
     public Pedido buscarPedidoId(int id) {
-        for (Pedido p : listaPedidos) {
-            if (p.getId() == id) {
-                return p;
-            }
-        }
-        throw new PedidoNoEncontradoException("El pedido buscado no existe");
+        return repository.findById(id)
+                .orElseThrow(() -> new PedidoNoEncontradoException("El pedido con id " + id + " no existe"));
     }
 
-    public LineaPedido buscarLineaPorId(Pedido pedido, int id) {
-        for (LineaPedido linea : pedido.getLineasPedido()) {
-            if (linea.getId() == id) {
-                return linea;
-            }
-        }
-        throw new LineaProductoNoEncontradoException("El producto que busca no se encuentra en este pedido");
+    public LineaPedido buscarLineaPorId(Pedido pedido, int idLineaPedido) {
+        return pedido.getLineasPedido().stream()
+                .filter(linea -> linea.getId() == idLineaPedido)
+                .findFirst()
+                .orElseThrow(() -> new LineaProductoNoEncontradoException(
+                        "La línea de producto no se encuentra en este pedido"));
     }
 
-    public void quitarProducto(Pedido pedido, int idLineaPedido) {
+    @Transactional
+    public void quitarProducto(int idPedido, int idLineaPedido) {
+        Pedido pedido = buscarPedidoId(idPedido);
         LineaPedido linea = buscarLineaPorId(pedido, idLineaPedido);
         Producto producto = linea.getProducto();
 
         producto.setStock(producto.getStock() + linea.getCantidad());
 
         pedido.quitarLinea(linea);
+        repository.save(pedido);
     }
 
     public List<Pedido> listarPedidos() {
-        return listaPedidos;
+        return repository.findAll();
     }
 
 }
