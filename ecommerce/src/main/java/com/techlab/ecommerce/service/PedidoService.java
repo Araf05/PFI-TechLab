@@ -2,6 +2,7 @@ package com.techlab.ecommerce.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import com.techlab.ecommerce.model.Pedido;
 import com.techlab.ecommerce.exception.LineaProductoNoEncontradoException;
@@ -58,12 +59,23 @@ public class PedidoService {
         }
         producto.setStock(producto.getStock() - cantidad);
 
-        LineaPedido nuevaLinea = new LineaPedido(pedido, producto, cantidad);
-        pedido.agregarLinea(nuevaLinea);
+        Optional<LineaPedido> lineaExistente = pedido.getLineas().stream()
+                .filter(l -> l.getProducto().getId().equals(producto_id))
+                .findFirst();
 
-        repository.save(pedido);
-
-        return nuevaLinea;
+        if (lineaExistente.isPresent()) {
+            LineaPedido linea = lineaExistente.get();
+            linea.setCantidad(linea.getCantidad() + cantidad);
+            pedido.recalcularTotal();
+            repository.save(pedido);
+            return linea;
+        } else {
+            // Si no existe, mantiene tu comportamiento original perfectamente
+            LineaPedido nuevaLinea = new LineaPedido(pedido, producto, cantidad);
+            pedido.agregarLinea(nuevaLinea);
+            repository.save(pedido);
+            return nuevaLinea;
+        }
     }
 
     public Pedido buscarPedidoId(Integer id) {
@@ -93,6 +105,33 @@ public class PedidoService {
 
     public List<Pedido> listarPedidos() {
         return repository.findAll();
+    }
+
+    @Transactional
+    public void eliminarPedido(Integer idPedido) {
+        Pedido pedido = buscarPedidoId(idPedido);
+
+        for (LineaPedido linea : pedido.getLineas()) {
+            Producto producto = linea.getProducto();
+            producto.setStock(producto.getStock() + linea.getCantidad());
+        }
+
+        repository.delete(pedido);
+    }
+
+    @Transactional
+    public Pedido vaciarPedido(Integer idPedido) {
+        Pedido pedido = buscarPedidoId(idPedido);
+        
+        for (LineaPedido linea : pedido.getLineas()) {
+            Producto producto = linea.getProducto();
+            producto.setStock(producto.getStock() + linea.getCantidad());
+        }
+
+        pedido.getLineas().clear();
+        pedido.setCostoTotal(0.0);
+
+        return repository.save(pedido);
     }
 
 }

@@ -13,7 +13,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -41,11 +41,11 @@ public class Pedido {
     @JsonProperty("lineasPedido")
     private List<LineaPedido> lineas = new ArrayList<>();
 
-    @Positive(message = "El costo total del pedido debe ser mayor a cero.")
+    @PositiveOrZero(message = "El costo total del pedido no puede ser negativo.")
     @Column(name = "costoTotal", nullable = false)
     private Double costoTotal;
 
-    
+
     public void setFecha() {
         fecha = new Timestamp(System.currentTimeMillis());
     }
@@ -61,7 +61,7 @@ public class Pedido {
         recalcularTotal();
     }
 
-    private void recalcularTotal() {
+    public void recalcularTotal() {
         costoTotal = 0.0;
 
         for (LineaPedido linea : lineas) {
@@ -69,19 +69,5 @@ public class Pedido {
         }
     }
 
-    /// Override
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-
-        sb.append("\nPedido #").append(id).append("\n");
-        sb.append("Fecha: ").append(fecha).append("\n");
-        for (LineaPedido linea : lineas) {
-            sb.append(linea).append("\n");
-        }
-        sb.append("TOTAL: $").append(costoTotal);
-
-        return sb.toString();
-    }
 
 }

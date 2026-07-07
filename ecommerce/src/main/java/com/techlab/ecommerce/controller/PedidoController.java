@@ -8,10 +8,12 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.techlab.ecommerce.model.LineaPedido;
 import com.techlab.ecommerce.model.Pedido;
 import com.techlab.ecommerce.service.PedidoService;
 
@@ -44,9 +46,29 @@ public class PedidoController {
     }
 
     @DeleteMapping("/{idPedido}/lineas/{idLinea}")
-    public ResponseEntity<Void> quitarProducto(@PathVariable Integer idPedido, Integer idLinea) {
+    public ResponseEntity<Void> quitarProducto(@PathVariable Integer idPedido, @PathVariable Integer idLinea) {
         service.quitarProducto(idPedido, idLinea);
         return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{idPedido}/lineas")
+    public ResponseEntity<LineaPedido> agregarLineaAPedido(@PathVariable Integer idPedido,
+            @RequestBody LineaPedido nuevaLinea) {
+        LineaPedido lineaCreada = service.creaLineaPedido(idPedido, nuevaLinea.getProducto().getId(),
+                nuevaLinea.getCantidad());
+        return ResponseEntity.status(HttpStatus.CREATED).body(lineaCreada);
+    }
+
+    @PutMapping("/{idPedido}/vaciar")
+    public ResponseEntity<Pedido> vaciarPedido(@PathVariable Integer idPedido) {
+        Pedido pedidoVacio = service.vaciarPedido(idPedido);
+        return ResponseEntity.ok(pedidoVacio);
+    }
+
+    @DeleteMapping("/{idPedido}")
+    public ResponseEntity<Void> eliminarPedido(@PathVariable Integer idPedido) {
+        service.eliminarPedido(idPedido);
+        return ResponseEntity.noContent().build();
     }
 
 }
