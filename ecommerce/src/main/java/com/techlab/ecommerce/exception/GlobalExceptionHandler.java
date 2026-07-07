@@ -13,10 +13,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidacion(MethodArgumentNotValidException e) {
         Map<String, String> errores = new HashMap<>();
 
-        for(FieldError error : e.getBindingResult().getFieldErrors()) {
+        for (FieldError error : e.getBindingResult().getFieldErrors()) {
             errores.put(error.getField(), error.getDefaultMessage());
         }
 
@@ -48,5 +49,4 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 
-   
 }
