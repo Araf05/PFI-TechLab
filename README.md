@@ -71,8 +71,8 @@ Abre el archivo index.html directamente en cualquier navegador web o utiliza la 
 
 ```JSON
 {
-  "nombre": "Nombre de categoría",
-  "descripcion": "Descripcion de categoría"
+  "nombre": "Cooperativo",
+  "descripcion": "Juegos de mesa cooperativos."
 }
 ```
 
