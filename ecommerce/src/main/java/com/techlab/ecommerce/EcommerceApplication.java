@@ -22,7 +22,6 @@ public class EcommerceApplication {
 	// 	return args -> {
 	// 		if(categoriaService.leerTodos().isEmpty()) {
 	// 			Categoria familiar = categoriaService.crearCategoria(new Categoria(null,"Familiar", "Reglas sencillas y partidas dinámicas diseñadas para reunir a personas de todas las edades y disfrutar juntos."));
-	// 			Categoria cooperativo = categoriaService.crearCategoria(new Categoria(null, "Cooperativo", "Juegos donde el rival es el propio tablero y los jugadores deben hacer equipo para ganar o perder juntos."));
 	// 			Categoria solitario = categoriaService.crearCategoria(new Categoria(null, "Solitario", "Desafíos individuales centrados en la lógica y la estrategia personal, ideales para jugar a tu propio ritmo."));
 	// 			Categoria competitivo = categoriaService.crearCategoria(new Categoria(null, "Competitivo", "Partidas intensas donde mides tu estrategia directamente contra otros jugadores para superarlos y ganar."));
 
